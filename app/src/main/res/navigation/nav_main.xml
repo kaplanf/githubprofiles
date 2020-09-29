@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/listing_fragment">
+
+    <fragment
+        android:id="@+id/listing_fragment"
+        android:name="com.kaplan.githubprofiles.ui.listing.view.ListingFragment"
+        android:label="@string/listing_title"
+        tools:layout="@layout/fragment_list">
+
+        <action
+            android:id="@+id/action_to_detail_fragment"
+            app:destination="@id/detail_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detail_fragment"
+        android:name="com.kaplan.githubprofiles.ui.detail.view.DetailFragment"
+        android:label="@string/detail_title"
+        tools:layout="@layout/fragment_detail">
+
+        <argument
+            android:name="userName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+    </fragment>
+</navigation>
