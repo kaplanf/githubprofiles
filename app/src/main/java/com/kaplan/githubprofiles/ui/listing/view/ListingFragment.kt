@@ -4,16 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.kaplan.githubprofiles.data.Result
 import com.kaplan.githubprofiles.databinding.FragmentListBinding
 import com.kaplan.githubprofiles.di.Injectable
 import com.kaplan.githubprofiles.di.injectViewModel
 import com.kaplan.githubprofiles.di.observe
+import com.kaplan.githubprofiles.ui.listing.data.ListingItem
 import com.kaplan.githubprofiles.util.ConnectivityUtil
 import com.kaplan.githubprofiles.util.EndlessScrollModel
-import com.kaplan.githubprofiles.util.then
+import com.kaplan.githubprofiles.util.ui.hide
+import com.kaplan.githubprofiles.util.ui.show
 import javax.inject.Inject
 
 class ListingFragment : Fragment(), Injectable {
@@ -28,6 +32,8 @@ class ListingFragment : Fragment(), Injectable {
     lateinit var listAdapter: ListingAdapter
 
     private val endlessScrollModel = EndlessScrollModel()
+
+    var listofIds = emptyList<Int>()
 
 
     override fun onCreateView(
@@ -44,13 +50,23 @@ class ListingFragment : Fragment(), Injectable {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        endlessScrollModel.visibleThreshold = 150
+        endlessScrollModel.visibleThreshold = 5
         binding.apply {
-            taskListView.adapter = listAdapter
+            recyclerView.adapter = listAdapter
             binding.viewModel = listingViewModel
             model = endlessScrollModel
         }
+        subscribeDb()
         subscribeUi(binding, listAdapter)
+    }
+
+    fun preparelist(list: List<ListingItem>) {
+        list.forEach { listingItem ->
+            if (listofIds.any { i: Int -> i == listingItem.id }) {
+                listingItem.hasNote = true
+            }
+        }
+        listAdapter.updateData(list)
     }
 
     private fun subscribeUi(binding: FragmentListBinding, adapter: ListingAdapter) {
@@ -58,18 +74,35 @@ class ListingFragment : Fragment(), Injectable {
         { result ->
             when (result.status) {
                 Result.Status.SUCCESS -> {
-                    result.data?.let {
-                        it.isNotEmpty() then {
-                            listingViewModel.pageLiveData.value =
-                                result.data[result.data.size - 1].id
-                            endlessScrollModel.currentPage = result.data[result.data.size - 1].id
-                            adapter.updateData(result.data)
-                        }
+                    if (result.data.isNullOrEmpty().not()) {
+                        binding.progressBar.hide()
+                        endlessScrollModel.visibleThreshold = result.data!!.size
+                        listingViewModel.pageLiveData.value = result.data.last().id
+                        endlessScrollModel.currentPage = result.data.last().id
+                        preparelist(result.data)
+//                        adapter.updateData(result.data)
+
                     }
                 }
-                Result.Status.LOADING -> {
-                }
+                Result.Status.LOADING -> binding.progressBar.show()
                 Result.Status.ERROR -> {
+                    binding.progressBar.hide()
+                    binding.root?.let {
+                        Toast.makeText(requireContext(), result.message!!, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun subscribeDb() {
+        observe(listingViewModel.dbItems)
+        { result ->
+            when (result.status) {
+                Result.Status.SUCCESS -> {
+                    result.data?.map { detailItem -> detailItem.id }?.let {
+                        listofIds = it
+                    }
                 }
             }
         }

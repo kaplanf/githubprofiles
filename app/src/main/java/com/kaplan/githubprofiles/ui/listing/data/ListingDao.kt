@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.kaplan.githubprofiles.ui.detail.data.DetailItem
 
 @Dao
 interface ListingDao {
@@ -21,5 +22,8 @@ interface ListingDao {
 
     @Query("SELECT * FROM items WHERE id = :id")
     fun getListingItem(id: String): LiveData<ListingItem>
+
+    @Query("SELECT * FROM details WHERE note != \"\"")
+    fun getDetailsWithNotes() : LiveData<List<DetailItem>>
 }
 

@@ -53,4 +53,7 @@ data class DetailItem(
     val blog: String?,
 
     @field:SerializedName("type")
-    val type: String?)
+    val type: String?,
+
+    var note: String? = ""
+)

@@ -37,12 +37,16 @@ class ListingViewModel @Inject constructor(
         }
     }
 
-    fun onLoadMore2()  = repository.observeList(pageLiveData.value!!) as MutableLiveData<Result<List<ListingItem>>>
+    fun onLoadMore2() =
+        repository.observeList(pageLiveData.value!!) as MutableLiveData<Result<List<ListingItem>>>
 
     fun setPage(page: Int) {
         pageLiveData.value = page
         onLoadMore()
     }
+
+
+    val dbItems by lazy { repository.observeDetailsWithNotes() }
 
     override fun onCleared() {
         super.onCleared()

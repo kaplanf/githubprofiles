@@ -2,6 +2,7 @@ package com.kaplan.githubprofiles.ui.detail.view
 
 import androidx.lifecycle.ViewModel
 import com.kaplan.githubprofiles.di.CoroutineScropeIO
+import com.kaplan.githubprofiles.ui.detail.data.DetailItem
 import com.kaplan.githubprofiles.ui.detail.data.DetailRepository
 import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
@@ -17,5 +18,10 @@ class DetailViewModel @Inject constructor(
         repository.observeUser(
             username
         )
+    }
+
+    fun saveNote(detailItem: DetailItem)
+    {
+        repository.saveUser(detailItem)
     }
 }

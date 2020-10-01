@@ -26,4 +26,7 @@ data class ListingItem(
     val repoUrl: String,
 
     @field:SerializedName("type")
-    val type: String)
+    val type: String,
+
+    var hasNote: Boolean = false
+    )

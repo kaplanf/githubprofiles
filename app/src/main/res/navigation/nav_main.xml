@@ -30,5 +30,13 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null"/>
+
+        <action
+            android:id="@+id/action_to_list_fragment"
+            app:destination="@id/listing_fragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_in_left" />
     </fragment>
 </navigation>

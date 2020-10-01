@@ -1,12 +1,10 @@
 package com.kaplan.githubprofiles.ui.detail.data
 
 import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.kaplan.githubprofiles.ui.listing.data.ListingItem
 
 @Dao
 interface DetailDao {
@@ -16,6 +14,9 @@ interface DetailDao {
 
     @Query("SELECT * FROM details ORDER BY id DESC")
     fun getDetailItems(): LiveData<List<DetailItem>>
+
+    @Query("SELECT * FROM details WHERE note != \"\"")
+    fun getDetailsWithNotes() : LiveData<List<DetailItem>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(detailItem: DetailItem)

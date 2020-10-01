@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="clickListener"
             type="android.view.View.OnClickListener" />
@@ -62,6 +63,20 @@
             app:layout_constraintLeft_toRightOf="@id/image"
             app:layout_constraintStart_toEndOf="@+id/image"
             tools:text="Detail" />
+
+
+        <ImageView
+            android:id="@+id/note"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/note_icon"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
         <View
             android:layout_width="0dp"

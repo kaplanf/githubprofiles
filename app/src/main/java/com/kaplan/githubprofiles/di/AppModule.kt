@@ -2,6 +2,8 @@ package com.kaplan.githubprofiles.di
 
 import android.app.Application
 import android.content.Context
+import com.kaplan.githubprofiles.BuildConfig
+import com.kaplan.githubprofiles.api.AuthInterceptor
 import com.kaplan.githubprofiles.api.WebService
 import com.kaplan.githubprofiles.data.AppDatabase
 import com.kaplan.githubprofiles.ui.detail.data.DetailRemoteDataSource
@@ -25,7 +27,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideWebService(okhttpClient: OkHttpClient,
+    fun provideWebService(@PrivateApi okhttpClient: OkHttpClient,
                            converterFactory: GsonConverterFactory
     ) = provideService(okhttpClient, converterFactory, WebService::class.java)
 
@@ -56,6 +58,15 @@ class AppModule {
 
     @Provides
     fun provideListAdapter(context: Context) = ListingAdapter(context)
+
+    @PrivateApi
+    @Provides
+    fun providePrivateOkHttpClient(
+        upstreamClient: OkHttpClient
+    ): OkHttpClient {
+        return upstreamClient.newBuilder()
+            .addInterceptor(AuthInterceptor(BuildConfig.API_DEVELOPER_TOKEN)).build()
+    }
 
     private fun createRetrofit(
             okhttpClient: OkHttpClient,

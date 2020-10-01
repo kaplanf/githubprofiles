@@ -3,6 +3,8 @@ package com.kaplan.githubprofiles.ui.listing.view
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -10,18 +12,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kaplan.githubprofiles.binding.BindableAdapter
 import com.kaplan.githubprofiles.databinding.ListItemBinding
 import com.kaplan.githubprofiles.ui.listing.data.ListingItem
+import com.kaplan.githubprofiles.util.then
 import javax.inject.Inject
 
 class ListingAdapter @Inject constructor(context: Context) :
-    RecyclerView.Adapter<ListingAdapter.ViewHolder>(), BindableAdapter<List<ListingItem>>{
+    RecyclerView.Adapter<ListingAdapter.ViewHolder>(), BindableAdapter<List<ListingItem>> {
 
     var listingItems = ArrayList<ListingItem>()
+    var reverse = false
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val listItem = getItem(position)
         listItem?.let {
             holder.apply {
-                bind(createOnClickListener(listItem.login), listItem)
+                bind(createOnClickListener(listItem.login), listItem, reverse)
                 itemView.tag = listItem
             }
         }
@@ -46,14 +50,15 @@ class ListingAdapter @Inject constructor(context: Context) :
         }
     }
 
-    class ViewHolder(private val binding: ListItemBinding)
-        : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            listener: View.OnClickListener, item: ListingItem,
+            listener: View.OnClickListener, item: ListingItem, reverse: Boolean
         ) {
             binding.apply {
                 clickListener = listener
                 listItem = item
+                if (reverse) image.tag = "reverse" else image.tag = ""
+                note.visibility = item.hasNote then VISIBLE ?: GONE
                 executePendingBindings()
             }
         }
@@ -72,12 +77,15 @@ class ListingAdapter @Inject constructor(context: Context) :
     }
 
     fun getItem(position: Int): ListingItem {
+        reverse = position % 4 == 0
         return listingItems[position]
     }
 }
 
-private class ListingDiffCallback(private val oldList: List<ListingItem>,
-                           private val newList: List<ListingItem>) :
+private class ListingDiffCallback(
+    private val oldList: List<ListingItem>,
+    private val newList: List<ListingItem>
+) :
     DiffUtil.Callback() {
 
     override fun getOldListSize(): Int {
@@ -92,8 +100,10 @@ private class ListingDiffCallback(private val oldList: List<ListingItem>,
         return oldList[oldItemPosition].id == newList[newItemPosition].id
     }
 
-    override fun areContentsTheSame(oldItemPosition: Int,
-                                    newItemPosition: Int): Boolean {
+    override fun areContentsTheSame(
+        oldItemPosition: Int,
+        newItemPosition: Int
+    ): Boolean {
         val oldItem = oldList[oldItemPosition]
         val newItem = newList[newItemPosition]
         return oldItem.id == newItem.id
