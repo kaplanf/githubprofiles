@@ -7,17 +7,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 import com.kaplan.githubprofiles.data.Result
 import com.kaplan.githubprofiles.databinding.FragmentListBinding
 import com.kaplan.githubprofiles.di.Injectable
 import com.kaplan.githubprofiles.di.injectViewModel
 import com.kaplan.githubprofiles.di.observe
 import com.kaplan.githubprofiles.ui.listing.data.ListingItem
+import com.kaplan.githubprofiles.util.ConnectionLiveData
 import com.kaplan.githubprofiles.util.ConnectivityUtil
 import com.kaplan.githubprofiles.util.EndlessScrollModel
+import com.kaplan.githubprofiles.util.then
 import com.kaplan.githubprofiles.util.ui.hide
 import com.kaplan.githubprofiles.util.ui.show
+import kotlinx.android.synthetic.main.shimmer_container.*
 import javax.inject.Inject
 
 class ListingFragment : Fragment(), Injectable {
@@ -35,6 +37,7 @@ class ListingFragment : Fragment(), Injectable {
 
     var listofIds = emptyList<Int>()
 
+    var firstLoad = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +45,8 @@ class ListingFragment : Fragment(), Injectable {
         savedInstanceState: Bundle?
     ): View? {
         listingViewModel = injectViewModel(viewModelFactory)
-        listingViewModel.connectivityAvailable = ConnectivityUtil.isConnected(requireContext())
+        listingViewModel.connectivityAvailable =
+            ConnectivityUtil.isNetworkAvailable(requireContext())
         binding = FragmentListBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -58,9 +62,10 @@ class ListingFragment : Fragment(), Injectable {
         }
         subscribeDb()
         subscribeUi(binding, listAdapter)
+        subscribeConnectionChange()
     }
 
-    fun preparelist(list: List<ListingItem>) {
+    private fun preparelist(list: List<ListingItem>) {
         list.forEach { listingItem ->
             if (listofIds.any { i: Int -> i == listingItem.id }) {
                 listingItem.hasNote = true
@@ -80,12 +85,31 @@ class ListingFragment : Fragment(), Injectable {
                         listingViewModel.pageLiveData.value = result.data.last().id
                         endlessScrollModel.currentPage = result.data.last().id
                         preparelist(result.data)
-//                        adapter.updateData(result.data)
-
+                        binding?.apply {
+                            shimmerFrameLayout.stopShimmer()
+                            isEmpty = false
+                            executePendingBindings()
+                        }
                     }
                 }
-                Result.Status.LOADING -> binding.progressBar.show()
+                Result.Status.LOADING -> {
+                    binding.progressBar.show()
+                    binding?.apply {
+                        if (firstLoad) {
+                            shimmerFrameLayout.startShimmer()
+                            isEmpty = true
+                            executePendingBindings()
+                        }
+                    }
+                    firstLoad = false
+                }
                 Result.Status.ERROR -> {
+                    binding?.apply {
+                        shimmerFrameLayout.stopShimmer()
+                        isEmpty = false
+                        executePendingBindings()
+                    }
+
                     binding.progressBar.hide()
                     binding.root?.let {
                         Toast.makeText(requireContext(), result.message!!, Toast.LENGTH_LONG).show()
@@ -104,6 +128,18 @@ class ListingFragment : Fragment(), Injectable {
                         listofIds = it
                     }
                 }
+            }
+        }
+    }
+
+    private fun subscribeConnectionChange() {
+        val connectionLiveData = ConnectionLiveData(requireContext())
+        observe(connectionLiveData)
+        { isConnected ->
+            val message = isConnected then "Connected to the Network now" ?: "Connection Lost"
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            if (isConnected) {
+                listingViewModel.onLoadMore()
             }
         }
     }

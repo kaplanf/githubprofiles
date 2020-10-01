@@ -9,6 +9,7 @@ import com.kaplan.githubprofiles.data.AppDatabase
 import com.kaplan.githubprofiles.ui.detail.data.DetailRemoteDataSource
 import com.kaplan.githubprofiles.ui.listing.data.ListingRemoteDataSource
 import com.kaplan.githubprofiles.ui.listing.view.ListingAdapter
+import com.kaplan.githubprofiles.util.ApiKey
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -65,7 +66,7 @@ class AppModule {
         upstreamClient: OkHttpClient
     ): OkHttpClient {
         return upstreamClient.newBuilder()
-            .addInterceptor(AuthInterceptor(BuildConfig.API_DEVELOPER_TOKEN)).build()
+            .addInterceptor(AuthInterceptor(ApiKey.key)).build()
     }
 
     private fun createRetrofit(

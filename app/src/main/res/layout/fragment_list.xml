@@ -25,6 +25,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include
+            android:id="@+id/shimmer"
+            layout="@layout/shimmer_container"
+            android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="0dp"
@@ -34,22 +39,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:onScrolledToBottom="@{(page) -> viewModel.setPage(model.currentPage)}"
-            app:visibleThreshold="@{model.visibleThreshold}"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/empty_list_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/empty_list"
-            android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:visibleThreshold="@{model.visibleThreshold}" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -59,6 +51,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

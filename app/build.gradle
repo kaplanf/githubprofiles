@@ -15,7 +15,6 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        buildConfigField 'String', 'API_DEVELOPER_TOKEN', "\"${api_developer_token}\""
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -105,6 +104,8 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$rootProject.testExtJunit"
     androidTestImplementation "androidx.test.uiautomator:uiautomator:$rootProject.uiAutomatorVersion"
     androidTestImplementation "androidx.work:work-testing:$rootProject.workVersion"
+
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"

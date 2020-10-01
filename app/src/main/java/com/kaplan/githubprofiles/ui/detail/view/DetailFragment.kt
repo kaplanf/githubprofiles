@@ -9,13 +9,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.kaplan.githubprofiles.databinding.FragmentDetailBinding
-import com.kaplan.githubprofiles.databinding.FragmentListBinding
 import com.kaplan.githubprofiles.di.Injectable
 import com.kaplan.githubprofiles.di.injectViewModel
 import com.kaplan.githubprofiles.di.observe
 import com.kaplan.githubprofiles.ui.detail.data.DetailItem
-import com.kaplan.githubprofiles.ui.listing.view.ListingFragmentDirections
 import kotlinx.android.synthetic.main.fragment_detail.*
+import com.kaplan.githubprofiles.data.Result
 import javax.inject.Inject
 
 class DetailFragment : Fragment(), Injectable {
@@ -52,7 +51,7 @@ class DetailFragment : Fragment(), Injectable {
         observe(viewModel.user)
         { result ->
             when (result.status) {
-                com.kaplan.githubprofiles.data.Result.Status.SUCCESS -> {
+                Result.Status.SUCCESS -> {
                     binding.apply {
                         clickListener = createOnClickListener()
                         result.data?.let {
@@ -63,10 +62,10 @@ class DetailFragment : Fragment(), Injectable {
                         }
                     }
                 }
-                com.kaplan.githubprofiles.data.Result.Status.ERROR -> {
+                Result.Status.ERROR -> {
 
                 }
-                com.kaplan.githubprofiles.data.Result.Status.LOADING -> {
+                Result.Status.LOADING -> {
                 }
             }
         }

@@ -16,7 +16,7 @@ interface DetailDao {
     fun getDetailItems(): LiveData<List<DetailItem>>
 
     @Query("SELECT * FROM details WHERE note != \"\"")
-    fun getDetailsWithNotes() : LiveData<List<DetailItem>>
+    fun getDetailsWithNotes() : List<DetailItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(detailItem: DetailItem)

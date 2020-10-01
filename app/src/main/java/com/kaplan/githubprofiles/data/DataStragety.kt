@@ -13,8 +13,16 @@ fun <T, A> resultLiveData(
     saveCallResult: suspend (A) -> Unit
 ): LiveData<Result<T>> =
     liveData(Dispatchers.IO) {
+
+        var dbObjectEmpty = false
+
         emit(Result.loading<T>())
-        val source = databaseQuery.invoke().map { Result.success(it) }
+        val source = databaseQuery.invoke().map {
+            if(it == null)
+            {
+                dbObjectEmpty = true
+            }
+            Result.success(it) }
         emitSource(source)
 
         val responseStatus = networkCall.invoke()

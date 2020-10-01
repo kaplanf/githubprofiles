@@ -31,13 +31,12 @@ class ListingViewModel @Inject constructor(
     }
 
     fun onLoadMore() {
-//        mutablelist = repository.observeList(pageLiveData.value!!) as MutableLiveData<Result<List<ListingItem>>>
-        listMediator.addSource(onLoadMore2()) {
+        listMediator.addSource(getList()) {
             listMediator.postValue(it)
         }
     }
 
-    fun onLoadMore2() =
+    fun getList() =
         repository.observeList(pageLiveData.value!!) as MutableLiveData<Result<List<ListingItem>>>
 
     fun setPage(page: Int) {
